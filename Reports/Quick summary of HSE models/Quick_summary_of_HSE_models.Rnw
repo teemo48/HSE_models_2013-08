@@ -1,0 +1,229 @@
+%% Quick summary of HSE models.rnw
+
+\documentclass{article}
+%\documentclass{scrartcl}   % Koma-script version -- many collisions with the packages below
+
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=3.5cm,rmargin=3.5cm}
+\usepackage[titletoc]{appendix}
+\usepackage{pdfpages}
+%\usepackage[draft]{pdfpages} % Just inserts a placeholder
+
+\usepackage{graphicx}  % For inserting existing images
+\usepackage{float}     % Helps make sure that float placement options like H work
+
+\usepackage{parskip}   % Insert a blank line between paragraphs
+
+\usepackage{booktabs}  % Nice toprules and bottomrules
+\heavyrulewidth=1.5pt  % Change the default to heavier lines
+
+\usepackage{placeins}  % Float barriers to keep floats from drifting down
+
+\usepackage[bookmarks]{hyperref} % Make bookmarks in the compiled pdf
+
+\usepackage{comment}   % Allows block comments ... begin{comment} end{comment}
+                       % Surrounding knitr chunks -- chunks will execute, but output will not weave into pdf  6/20/13
+                       % This is often satisfactory, and speeds up compliation dramatically ... 
+                       %    but if a chunk has an error then compilation will halt
+                       % Can always use % to comment out chunks
+                       % Can also set a "dothis" variable to FALSE in a chunk, then in subsequent chunks set option eval=dothis
+                       
+% For package xtable
+\usepackage{booktabs}  % Nice toprules and bottomrules
+\heavyrulewidth=1.5pt  % Change the default to heavier lines
+\usepackage{longtable} % Tables that span more than one page
+\usepackage{rotating}  % To rotate a page sideways
+\usepackage{tabularx}  % To control the width of the table
+
+\usepackage{changepage} % Temporarily change margins -- helpful for wide xtables
+
+% Watermark packages
+% \usepackage[firstpage]{draftwatermark}
+% \SetWatermarkText{Confidential}
+% \SetWatermarkScale{5}
+%\SetWatermarkColor[rgb]{0.7,0,0}      % Make text red
+
+%\begin{comment}
+<<Chunk_simple_cache, cache=TRUE, include=FALSE>>= 
+
+# =============================================================
+# Directories
+# =============================================================
+
+decipher.dir    = '/Users/timothywyant/Documents'
+analysis.dir    = paste( decipher.dir, 'Decipher projects/248 Combined asbestos trusts/Analysis/HSE model 2013-08', sep='/')
+data.dir        = paste( analysis.dir, 'Data', sep='/')
+function.dir    = paste( analysis.dir, 'Functions', sep='/')
+report.dir      = paste( analysis.dir, 'Reports', sep='/')
+output.dir      = paste( analysis.dir, 'Output', sep='/')
+
+
+
+UK.demog.dir    = paste( data.dir, 'UK.demog')
+UK.meso.dir     = paste( data.dir, 'UK.meso')
+Aus.demog.dir   = paste( data.dir, 'Aus.demog')
+Aus.meso.dir    = paste( data.dir, 'Aus.meso')
+US.demog.dir    = paste( data.dir, 'US.demog')
+US.meso.dir     = paste( data.dir, 'US.meso')
+
+
+# =============================================================
+# Libraries and functions
+# =============================================================
+
+require('ggplot2')
+require('plyr')
+require('reshape2')
+require('lubridate')
+require('scales')
+require('stringr')
+require('testthat')
+
+require('data.table')
+require('Hmisc')
+require('knitr')
+require('RColorBrewer')
+require('xlsx')
+require('zoo')
+
+# The demography package is used by some of the HSE modeling programs, but not all
+# It is not used in this one
+# The package depends on having X11 installed, which is not the default for Mountain Lion
+# If you try to load the library, and X11 is not installed, you will get a fatal error for the Rstudio session
+#       I.e., save stuff before trying
+# For recent versions of Mac OS X, you can download and install X11 from here: 
+#       http://xquartz.macosforge.org/landing/
+# require('demography')
+
+sessionInfo()
+
+
+setwd(function.dir)
+func.names = dir()
+if ( length(func.names) > 0) {
+  for (i in 1:length(func.names)) {
+    source( func.names[i])
+    # Use option local=TRUE for caching functions in knitr
+  }
+}
+func.names
+
+
+@
+%\end{comment}
+
+
+
+
+\begin{document}
+
+
+\title{ Quick summary of HSE models for forecasting mesothelioma incidence \\ Internal document  }
+\author{Timothy Wyant}
+\date{ 8/30/13}
+\maketitle
+
+\tableofcontents
+\listoffigures
+
+\section{Introduction}
+As I mentioned in an email, I would like you to undertake a project involving estimating a form (or several forms) of the so-called HSE model of mesothelioma incidence in the U.S.  I would then like you to forecast future annual mesotheliomas in the U.S. using one or more of these models, along with some error bounds.  Finally, we will use these national forecasts to make forecasts for individual asbestos trusts.  Typically, I do this by (1) calculating the ratios of recent mesothelioma claims counts against a trust to national counts, by birth cohohrt, and (2) applying these ratios to future predicted national incidence counts from your model, again by birth cohort.
+
+The HSE model is basically a poisson regression of mesothelioma incidence as a function of past exposure.  The poisson mean for any birth cohort in a given year is somewhat complex nonlinear function of cumulative exposure, and some biomedical parameters related to latency, intensity of exposure, and the manner in which risk increases as a function of time since exposuree.  
+
+This note provides some background on the HSE models, and other models that have been used to forecast asbestos claims. This note also outlines issues that have arisen regarding design and fitting of mesothelioma incidence models, and the treatment and use of demographic, historic incidence, and exposure data that provide the independent varialbes for the fitting.
+
+Along with this note, I am providing a zipped directory that contains: 
+
+\begin{enumerate}
+  \item PDFs of relevant references,
+  \item A summary xls that provides a master list of all the references by category,
+  \item Demographic and mesothelioma incidence data,
+  \item Summaries of my previous fits of the HSE and other models,
+  \item An Rstudio project that includes the Rnw program that produces this document, along with some R programs that process demographic and incidence data.
+\end{enumerate}
+
+For purposes of this note, I have created my own idiosyncratic bibliographic reference system.  The summary xls mentioned above crosswalks the references to the pdf files in the zipped directory.
+
+This background note does not pretend to be an exhaustive discussion of mesothelioma model fitting and forecasting issues, but hopefully it will give you a good start.
+
+
+\section{Projecting mesothelioma incidence}
+
+Mesothelioma has a long latency, so even though U.S. occupational exposure ended (in theory, and disregarding some more recent exposure for brake mechanics) around 1980-1982, we expect to see mesothelioma claims against these trusts until around 2060.  \footnote{ You'll see 2050 as the furthest year in a lot of projections, including some of mine.  This is because it has been relatively recently that reevaluation of the demographics of exposed workers has suggested that we need to move the outer boundaries further into the future.  In truth, it doesn't matter very much, because there are not many claims projected to occur in the 2050s.  Other uncertainties in the forecasting process are generally an order of magnitude greater than the uncertainty regarding the scale of continued incidence after 2050.  But we should gradually modify our forecasts to go out to 2060.}  Generally, the annual number of mesothelioma claims against one of our trusts is assumed to be a fixed fraction of the U.S. and Canadian mesotheliomas.  Canadian claims are generally treated as U.S. domestic claims, in terms of trust evaluation rules and level of compensation.  (There are many fewer Canadian mesotheliomas than there are U.S. mesotheliomas, or course, just because of the difference in population size.)  Now, "fixed" should be in quotes because sometimes (especially with a small trust) additional exposure worksites are identified for a given defendant.  And when a new trust comes online after a long time in bankruptcy (when new claim filings are stayed by the bankruptcy process) it may be difficult to know exactly what the fixed fraction is.  But caveats aside, we usually assume a fixed fraction.  This fraction in the asbestos expert witness vernacular -- aka "the lingo" in this document -- is often referred to as the "propensity to sue".
+
+Mesothelioma is almost entirely caused by asbestos exposure, and most of that exposure is occupational.  In addition, there are reasonably good models of how risk increases as a function of time since first exposure, and of level of exposure.  This summary note is full of qualifiers like "generally" and "reasonably good" because, as you might imagine, given the disputatious environment in which we find ourselves, almost every element of a set of calculations has been or will be a cause for disagreement.  Nonetheless, the forest is still a lot bigger than the individual trees, so I will try in this note to focus on the former with periodic asides about the latter.   Mesothelioma forecasting is central to:
+
+\begin{enumerate}
+  \item Determine how many mesothelioma are likely to be filed in the future against a trust, and when.  (The "when" is important because a trust can earn money on its investments, so timing as well as quantity are elements of the cash flow models.)  We do this by first making a national projection of mesothelioma incidence, and then applying a propensity to sue.  The declining curves of expected future incidence have different monikers in the lingo, such as "future decline curves" or "runoff curves."
+  \item Assess "how bad it can get" -- many of the large trusts have mesothelioma filing rates that are close to the national incidence rates.  So the national incidence rates provide an upper bound in worst-case scenarios.  As you've seen, I superimpose a national incidence curve on the bar charts in our quarterly reports.
+  \item Because mesothelioma is so closely tied to asbestos exposure, and has a developed science, projections of other diseases and conditions (lung cancer, colorectal and other digestive tract cancers, asbestosis) are often derived as some function of meosthelioma incidence.  This is done by either applying some ratio to meso incidence, or "inverting" meso incidence to calculate the demographic profile of exposed workers likely to file claims against a given trust, and then applying some disease-specific exposure-risk model to this estimated exposed worker population. 
+\end{enumerate}
+
+
+\section{Mesotheloma projection methods}
+
+Okay, so what is the HSE model?  HSE stands for "Health Safety Executive," a UK government agency that is sort of a hybrid of OSHA and the CDC.  Among other things, HSE tracks and report mesothelioma incidence (a lot better than we do).  And they have been active in recent years in creating and using new models for mesothelioma forecasting.  Note that I say "models".  Not only have they fit different models, but every time they fit "the same" model they tinker with it, so there are  models 1a, 1b, 1c, 2, 3, etc.  On top of that, the basic models have been adopted by actuaries and public health folks in the UK and in Australia, and with some of us here in the asbestos trust world.  All of us secondary adopters have done our own tinkering as well.  So "HSE model" is really more of a genus than a species.
+
+Here is a brief (and not exhaustive) overview of projection methods that are, or have been in use:
+
+\begin{enumerate}
+  \item \textbf{Nicholson method.}  From William Nicholson, in 1983.  This is a nice piece of work, but arguably dated.  He took airborne asbestos fiber concentration data from several industrial hygiene studies, BLS data on employment by industry, risk as a function of time since exposure from a longitudingal study of insulators, and NHIS death rates, and forecast future mesothelioma and lung cancer incidence. 
+  
+The most common method that experts have used in asbestos bankruptcy proceedings over the past decadesd has been to calculate a "propensity to sue" for a particular debtor, and apply it to Nicholson forecasts to get projecte claims.  However, the industries that generate the majority of today's claims are not industries that Nicholson included.  In particular, the new industry have much younger workforces.  Nicholson did not model women, or family members of exposed workers.  (It takes very little exposure to elevate the risk of mesothelioma.  Whenever an asbestos worker came home from work and bounced a kid on his or her knee, or handed a spouse some overalls to was, he was creating a poential mesothelioma case.)  Nicholson looked only at U.S. incidence.  He attenuated his worker cohorts in the future by applying death rates that were valid in the 1970s, not today's lower death rates.  His risk-as-a-function-of-exposure models have been modified and updated in the epidemiology literature. 
+
+This method is still used by some experts, most notably by the experts for the TACs -- each trust has a Trust Advisory Committee made of lawyers representing current claims.  These experts have principled reasons for espousing the Nicholson method, but I would be remiss if I did not note in passing that this method yields lower future meso counts -- by as much as 30-35\% -- than all other methods currently in use. 
+
+\item \textbf{KPMG Nicholson} Along about 2000-2005, KPMG did an updated version of the Nicholson method that essentially replicated his work, but updating the industeries (and their workforce age profiles) included in the calculation.
+
+\item \textbf{Revised KPMG Nicholson}  In 2010 or thereabouts, ARPC (a firm that for while was a subsidiary of KPMG, and is now both the claims administrator and the forecasting expert for many trusts), at my urging, updated KPMG Nicholson with current and projected U.S. death rates.
+
+\item \textbf{Peto method} In 1990, ARPC asked me to come up with a metod for forecasting mesothelioma claims for the UNR trust.  The Nicholson method was not widely in use at the time.  I came up with what is called an inversion method -- I took meso claims, calculated the inverse of the risk-as-function-of-time-since-exposure formula, estimated the size and age profile of the exposed workforce for this trust, and moved this workforce forward in time, applying death rates and probabilities of disease in each futue year.  Unbeknownst to me, the Brit epidemiologist Julian Peto had done something similar, so ARPC at some subsequent date rechristined this approach as "the Peto method".  ARPC also refined my original methods for calclating future lung and other cancers, and nonmalignants, as a function of mesoteliomas.
+
+Somewhere in the late 1990s, ARPC also started using a simple model averaging for their forecasts -- they took the median forecast in each future year of the Nicholson, the KPMG Nicholson, and the Peto methods.
+
+\item \textbf{Revised Peto method}  In 2010 or thereabouts, experts for the TAC in the BW Trust challenged the Peto method.  In fact, this challenge had some merit as the method was currently being implemented.  In 1990, there were very few meso claims and many nonmalignant claims, so I had jury-rigged a method to supplement the meso claims with nonmalignant claims.  In consultation with me, ARPC revised their Peto method to rely only on mesothelioma claims for "backcasting" the exposed population, improved the smoothing methods they used for year of initial exposure crossed with duration of exposure, and while they were at it starte using four models in their averaging -- Nicholson, revised KPMG Nicholson, revised Peto, and the HSE model.
+
+In current payment percentage reports like the ARPC report for BW that I gave you, ARPC does not use the word "revised", but in fact their KPMG and Peto methods are now the revised ones that I have just described.
+
+\item \textbf{Age-period-cohort methods} These are standard sort of "main effects" models in epidemiology.  A lot of public health types and academics have published quick forecasts of mesothelioma incidence in various countries, states, and provinces using this method.  Unfortunately, it doesn't work very well.  Fits and predictive power have been crummy.  The basic problem is that asbestos exposure blossomed in the 1920s, dipped down during the depression, exploded during WWII (think liberty ship construction), grew further in te 50s and 60s boom times, and then precipitously declined in the 1970s because of OSHA requirements.  There is basically a complex and nonignorable interaction between age at first exposure duration of exposure that is not captured by the vanilla epidemiologic models.
+
+THe elimination of asbestos exposure in U.S. workplaces was a triumph of safety regulation.  Many European countries adopted similar workplace standards much later than the U.S. did, and they will continue to experience many more asbestos-caused deaths per capita than occur in the U.S. (In some of these countries, there may also be cancer risks higher than those in the U.S. because more of the asbestos used in manufacturing was amphibole asbestos (crocidolite, amosite, tremolite).  U.S. companies mainly used chrysotile asbestos, which is thought to be a less potent carcinogen.)
+
+The main reference you will find to the use of these age-period-cohort models for projecting U.S. incidence is in the papers by Price and Ware.  These guys also testify in asbestos bankruptcy about the likely number of future mesotheliomas.
+
+\item \textbf{Stallard and Manton methods} These are two demographers from Duke who were hired by the Manville Trust in the 1990s to do a mesothelioma forecast.  They developed and inversion method somewhat like the Peto method, but with more bells and whistles.  They have published a book about their method, which I have -- but in electronic form.  It may be worth your picking up either an electronic or hardcopy at some point -- you can bill me for it.  They work as experts for two trusts right now, and have updated their model to reflect current mesothelioma incidence and claim filing, and current and projected death rates.  They're a little more guarded in releasing their updated model, and I don't know of any experts who have tried to reproduce their models exactly.  However, I have seen the output of their model for one of our trusts, and it appears to give results very similar to those of the HSE model -- which is reassuring.  It yields future mesotelioma counts aobut 30\% higher than the Nicholson method would suggest.
+
+\item \textbf{HSE method(s)} More on this method in later on in this note.  It basically fixes the age-period-cohort method by incorporating a more complex interaction between age and period.
+
+\item \textbf{Latency methods} This is a poor term, but I wasn't consulted.  One could model level of occupational exposure in a country for any past year by looking at the number of tons of asbestos either mined or imported in each year, perhaps with a lag of a year or two to reflect time for the asbestos to move through the manufacturing and distribution system.  This seems like like a way to add useful information.  However, level of exposure in past years can be inferred from the HSE method for each past year, based on the shape of the period effect component of the model.  The HSE-inferred patterns of exposure over time do not match up well with the tonnage imported patterns.  And the HSE models yield substantially better fits to the mesothelioma.  This is not necessarily surprising, since these models use more degrees of freedom, but it is unclear why they differ so much.  Differences in manufacturing patterns and processes that are not captured by sheer tonnage?  The thing is, the HSE inferred exposure patterns make intuitive sense.  Exposure levels go up in the 20s, down in the 30s, up and up in the 50s and 60s, and way down in the 70s.  It's just the slopes and ultimate heights of the exposure curve over time that differs from raw tonnage.
+
+To make matters more confusing, HSE folks in one of their publications\footnote{HSE Resarch Report \#876 (2011)} look at what happens when you use a couple of different models, one of them being the latency model.  But they don't call it the "latency model", so it sort of ends up being "an" HSE model but not "the" HSE model.  (HSE refers to it as the "revised risk" model.  But they don't discard their original model, and assert that the best estimate of future the future incidence peak is still what they estimated from "the" HSE model, and that the upper bound is still the upper bound that they calculated as one end of the 95\% posterior density interval for that model's forecast. 
+
+\item \textbf{Two-stage clonal expansion methods} This the other of the two alternative models from the HSE research report cited just above.  I don't know much about it, and I have not seen anybody else use it to make actual incidence forecasts. 
+
+\end{enumerate}
+
+
+\section{The basic "risk as function of exposure" models}
+
+The basic biomedical models for risk of mesothelioma and lung cancer as a function of (1) time since first exposure and (2) intensity of exposure come from an EPA review of available models conducted in the early 1980s and published in the Congressional Record in 1986.\footnote{EPA 1986 Assessment (1986)}  A good recent article about these models, which concludes (with a bunch of ifs and buts) that the 1986 EPA models are still appropriate.\footnote{Berman and Crump (2008)}
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics{EPA_meso_model}
+      \caption{The 1986 EPA mesothelioma model, from Berman and Crump.}
+\end{figure}
+
+\section{Fitting the HSE model}
+
+\section{Historic incidence data for model fitting}
+
+\section{Demographic data and death rate data for model fitting and forecasting}
+
+\section{Previous fits of the HSE model}
+
+\section{Miscellaneous model fitting and forecasting issues}
+
+
+\end{document}
