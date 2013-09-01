@@ -51,20 +51,19 @@
 # =============================================================
 
 decipher.dir    = '/Users/timothywyant/Documents'
-analysis.dir    = paste( decipher.dir, 'Decipher projects/248 Combined asbestos trusts/Analysis/HSE model 2013-08', sep='/')
+analysis.dir    = paste( decipher.dir, 'Decipher projects/248 Combined asbestos trusts/Analysis/HSE models 2013-08', sep='/')
 data.dir        = paste( analysis.dir, 'Data', sep='/')
 function.dir    = paste( analysis.dir, 'Functions', sep='/')
 report.dir      = paste( analysis.dir, 'Reports', sep='/')
 output.dir      = paste( analysis.dir, 'Output', sep='/')
 
 
-
-UK.demog.dir    = paste( data.dir, 'UK.demog')
-UK.meso.dir     = paste( data.dir, 'UK.meso')
-Aus.demog.dir   = paste( data.dir, 'Aus.demog')
-Aus.meso.dir    = paste( data.dir, 'Aus.meso')
-US.demog.dir    = paste( data.dir, 'US.demog')
-US.meso.dir     = paste( data.dir, 'US.meso')
+UK.demog.dir    = paste( data.dir, 'UK.demog', sep='/')
+UK.meso.dir     = paste( data.dir, 'UK.meso', sep='/')
+Aus.demog.dir   = paste( data.dir, 'Aus.demog', sep='/')
+Aus.meso.dir    = paste( data.dir, 'Aus.meso', sep='/')
+US.demog.dir    = paste( data.dir, 'US.demog', sep='/')
+US.meso.dir     = paste( data.dir, 'US.meso', sep='/')
 
 
 # =============================================================
@@ -211,13 +210,102 @@ The basic biomedical models for risk of mesothelioma and lung cancer as a functi
 
 \begin{figure}[h!]
   \centering
-    \includegraphics{EPA_meso_model}
+    \includegraphics[width=3.5in]{EPA_meso_model}
       \caption{The 1986 EPA mesothelioma model, from Berman and Crump.}
 \end{figure}
 
-\section{Fitting the HSE model}
+\FloatBarrier
+\section{Previous vesions of the HSE model}
 
 \section{Historic incidence data for model fitting}
+
+Assembling mesothelioma incidence data for the U.S. is more of a pain than it is for other countries.  The only (approximately) comprehensive national tumor registry is the USCCS, for which there is only five years or so of data.  The longest data record comes from the SEER system.  You many already be familiar with this system, in which case you can skipt to the next paragraph.  SEER-9 goes back the furthest.  It contains data from nine tumor registries that reporesent a substantial, but nonrandom, portion of the U.S. population.  Nonetheless, many researchers just apply incidence rates from SEER-9 to U.S. population counts (by sex and age group) to get estimated national incidence counts.  In the micro-world of asbestos disease estimation, there have been papers about "coastal bias".  These articles describe attempts to adjust for the fact that mesothelioma cases come disproportionately from coastal areas, due to shipbuilding exposure.  The SEER-9 data (it is argued) provide a skewed view of the U.S. because they don't adequately represent coastal regions.  I mention this issue just an historical aside -- it doesn't really affect what we're doing.
+
+Additional registries have been added to SEER over time, so as the years advance we start seeing, in addition to the SEER-9 series (which continues to be provided), SEER=11 and SEER=13.
+
+For the U.S., the gold standard is the USCS.  So the analytic challenge is to impute what USCS would have looked like had it been in existence as long as SEER-9 has.
+
+ARPC and I have both done this kind of imputation, but the methods have been pretty crude.  For initial fits of the HSE model, I suggest that you use UK and Australian meso incidence data.  These data are provided in easily used formats, and tend to be more up-to-date than the U.S. data.  In addition, since most of the development and use of the HSE model has been in these countries, we can compare our initial fits and predictions to those that have been published.  (I'm not looking for identical results -- our data are likely to be of slightly different vintage, and there are a variety of minor tweaks that have been made to the HSE model by different analysts.)
+
+Most countries report their data to the OECD in a reasonably timely fashion.  So the OECD data, which are publicly available, represent a source from which we can get incidence data in a standard format.  If we ever feel like it, once we get the mdel fitting where we like it, we could write an article or build a website in which we report meso forecasts by country.  So work on your shiny and markdown chops.
+
+Inicidence data for HSE (and similar) model fitting pose the same challenges as demographic data for these uses: (1) going from grouped data to "by single year of age", and (2) extending the oldest age interval to single years of age, or to some finer grouping levels.  See the section below on demographic data.  Usually, parallel methods are used for the demographic and incidence data.
+
+Ad hoc methods are often necessary for breaking the oldest age interval into finer categories.  For example, Australian data usually go through age 85+, and UK datq through age 90+.  For most purposes, it would be adequate to more finely bin the Australian date by making use of the ratio (UK 90+ count) / ( UK 85+ count).
+
+Another issue with regard to use of incidence data in our context is that at different times we deal with one or more of three different dates associated with a case of mesothelioma: 
+
+\begin{itemize}
+  \item Date of diagnosis (i.e., incidence)
+  \item Date of death
+  \item Date a claim is filed against a particular trust
+\end{itemize}
+
+This issue doesn't matter much for current purposes, as these three dates tend to be within a year or two of each other.  Mesothelioma is almost always fatal within a fairly short period of time, and U.S. attorneys are very efficient at identifying and signing up claims.  (The most expensive search term on Google for buying paid ads is "mesothelioma".)  In some expert analyses, the distinctions across these dates are ignored.
+
+However, it is also reasonable to assume something like a 1-year or a 2-year lag between incidence and filing, particularly forecasting. In forecasting, it might make sense to assume that the decline (aka "runoff") curves for claims lag the national incidence decline curves by a couple of years.
+
+Some other issues in terms of processing data on the claims end are:
+
+\begin{enumerate}
+  \item Claims during a bankruptcy proceeding are stayed -- i.e., firms are prohibited from filing them even they would have been filed against the debtor had the debtor not filed for Chapter 11 bankruptcy.  So at the beginning of a trust, there is a catch-up period (usually up to an initial statute of limitations (SOL) date that is typically three years after the initial claims received date) when a lot of the claims would have been filed earlier.  You will see the term "date arising" or "year arising" in some of the claims data that we receive, which translates to "year would have been filed."
+  \item Some mesothelioma claims are filed in the tort system against solvent defendants.  If there is a judgment in favor of the plaintiff, usually there is a damage award that is apportioned among the codefendants.  If the plaintiff has settled a claims with one of the codefendants, then that settlement amount may be subrtracted from the total award.  So sometimes a law firm will hold off on filing a claim with any trusts, because then the claim has not been settled with regard to the defendants associated with the trusts, and there is no offset to the tort system award.  Only when the claim is "finished" in the tort system is it filed with the trusts.  This can create a longer gap between diagnosis and filing than the 1-2 years I cited above.
+  \item Sometimes there can be a delayed diagnosis.  For example, recently a lot of lung cancer claims were filed because law firms started reviewion x-rays of workers who died of lung cancer, and who had some exposure to asbestos in the workplace.  Many such claims are not filed against asbestos trusts, because the likely cause of the lung cancer is smoking.  However, if there is x-ray evidence of asbestosis in addition to lung cancer, the claim is compensable according to most trust TDPs.  Here again is a situations in which the diagnosis dates in our claims data may not correspond to diagnosis dates that would be counted in public health systems.
+\end{enumerate}
+
+
+
+
+In R programs provided in the Rstudio project associated with this note, I have collected some UK and Australia incidence data and converted them into R data frames.  I provide some details below.
+
+
+
+\subsection{Australia}
+
+% The hyperref package is smart enough to sanitize the latex special characters in thge following links.
+% However the Rstudio editor for Rnw files is not that smart, so the text coloring will change 
+% in the editor window until 
+
+Australia mesothelioma data through 2009 were downloaded from a spreadsheet found \href{http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0CFkQFjAB&url=http%3A%2F%2Fwww.aihw.gov.au%2FWorkArea%2FDownloadAsset.aspx%3Fid%3D60129542445&ei=_gEgUujUAZK7sQS664CoAw&usg=AFQjCNHK5mdE14OBYiRGn2mKJ99QdE5JYw&sig2=TLAj4Y0hCvBI8wTttkKUqg&bvm=bv.51495398,d.cWc}{here}.  Government summaries can be found \href{http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0CF4QFjAC&url=http%3A%2F%2Fwww.safeworkaustralia.gov.au%2Fsites%2FSWA%2Fabout%2FPublications%2FDocuments%2F602%2FMESOTHELIOMA%2520IN%2520AUSTRALIA.doc&ei=ZFMjUsSvD-u3sQTbpoGYAQ&usg=AFQjCNE8hcc3odmiMYv0DkJASn3YuihkmA&sig2=LSGsne4YvK1NCYdQa7HKnA&bvm=bv.51495398,d.cWc}{here}.  These links may change when the data are updated.  I found that googling the terms AIHW, mesotheloma, and data got me to the desired sites.
+
+\begin{figure}
+\vspace{.3in}
+\centering
+<<Chunk-aussie-males, dev='pdf',  echo=FALSE, message=FALSE, fig.caption=' ', fig.show='hold', fig.width=4, fig.height=4, out.width='4in', out.height='4in'>>= 
+
+setwd( Aus.meso.dir)
+load('Australia meso incidence through 2009.rdata')
+mp
+
+@
+\caption{ Mesothelioma incidence - Australia males}
+
+\vspace{.3in}
+\end{figure}
+
+
+\FloatBarrier
+
+\subsection{UK}
+
+UK mesothelioma data through 2010 can were downloaded from a spreadsheet found \href{http://www.hse.gov.uk/statistics/tables/index.htm#lung}{here}.  These UK data reflect date of death, not date of diagnosis.  
+
+\begin{figure}
+\vspace{.3in}
+\centering
+<<Chunk-uk-males, dev='pdf',  echo=FALSE, message=FALSE, fig.caption=' ', fig.show='hold', fig.width=4, fig.height=4, out.width='4in', out.height='4in'>>= 
+
+setwd( UK.meso.dir)
+l = load('UK meso incidence through 2010')
+mp
+
+@
+\caption{ Mesothelioma incidence - UK males}
+
+\vspace{.3in}
+\end{figure}
+
+\FloatBarrier
 
 \section{Demographic data and death rate data for model fitting and forecasting}
 
