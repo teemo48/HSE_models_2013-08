@@ -313,9 +313,9 @@ Population counts are used as an exposure variable in the Poisson regression, an
 
 This R program also uses the demography package to generate Lee-Carter projections of the death rates.  These projected death rates can be used to translate the most recent population counts into future counts, for use in the HSE model projections.  Once we (well, you) have fit a satisfactory HSE model, we should probably do one projection just assuming that the most recent historic death rates will remain constant, and one using the projected death rates that continue to decline.
 
-In my past projections of U.S. mesothelioma incidence using an HSE model, I relied on the historic and projected death rates that the Social Security Administration uses.  See \url{http://www.ssa.gov/oact/NOTES/as120/LifeTables_Body.html}, authored by the wonderfully named Felicitie Bell (who wouldn't trust a forecast from her).  I had a number of conversations with back when I was projecting future tobacco mortality and health care costs for the U.S. DoJ civil rico case against the tobacco companies.
+In my past projections of U.S. mesothelioma incidence using an HSE model, I relied on the historic and projected death rates that the Social Security Administration uses.  See \url{http://www.ssa.gov/oact/NOTES/as120/LifeTables_Body.html}, authored by the wonderfully named Felicitie Bell (Who wouldn't trust a forecast from her?).  I had a number of conversations with her back when I was projecting future tobacco mortality and health care costs for the U.S. DoJ civil rico case against the tobacco companies.
 
-I have all of those SSA rates in R formats from my previous work, both with tobacco and with my HSE modeling.  For now, I suggest we use the Lee-Carter projections for all three of our countries.  We can plug the SSA stuff in later on.  I have read that the SSA uses Lee-Carter projections, although that doesn't really seem to be the case based on Felicitie's description.  I'm not a demographer, so keep that in mind.  I think there are a number of newer methods of death rate projections that do better than Lee Carter by some measures,  but Lee-Carter still seems to be the most commonly applied method.
+I have all of those SSA rates in R formats from my previous work, both with tobacco and with my HSE modeling.  For now, I suggest we use the Lee-Carter projections for all three of our countries.  We can plug the SSA stuff in later on.  I have read that the SSA uses Lee-Carter projections, although that doesn't really seem to be the case based on Felicitie's description.  I'm not a demographer, so keep that in mind.  I think there are a number of newer methods of death rate projections that do better than Lee Carter by some measures, but Lee-Carter still seems to be the most commonly applied method.
 
 \begin{figure}[ht]
 \vspace{.3in}
@@ -329,13 +329,55 @@ qp.us.male.age.60
 
 @
 \caption{ U.S. historic and projected death rates by year, 60 year-old men.}
-
 \vspace{.3in}
 \end{figure}
 
 Projected mesothelioma cases (and claims) increase if future death rates decrease, because when people live longer they are more likely to contract cancers like mesothelioma.  One issue that nobody but me seems to have thought about in making projections for estimating ultimate trust liabilities is that our exposed workforce may have lower median income than the U.S. as a whole.  (Or maybe not so much -- insulators (for example) don't usually become wealthy, but they were at least employed, frequently in well-paying union jobs.)  I suggest that we ignore this issue for now.  Down the line, we might want to think about it.  I provide some references in the accompanying material.\footnote{ Donkin (2002), Singh (2006), Waldron (2007)} In my previous HSE forecast, I adjusted death rates upwards using the Donkin articles.
 
 \FloatBarrier
+
+
+\section{Previous fits of the HSE model}
+
+\subsection{ Initial HSE model(s)}
+The HSE model was first described in an HSE working paper\footnote{HSE (2003)}, which subsequently became an article in BJM.\footnote{Hodgson (2005)}.  I relied on these articles for my own HSE fit.  The analysts used a lot of degrees of freedom to describe exposure as a function of age and of calendar year.  They used some kind of ad hoc methods that seem a bit antiquated, like what one would expect from some clever statisticians with roots in Bletchely Park who were reared to think of computer runs as an unseemly expense, to be minimized whenever possible.  
+
+Nonetheless, I followed their model pretty faithfully.  I fit it using optim(), with an option that allowed me to put bounds on the estimates for each parameter.  These were needed because, with all the degrees of freedom, the marginal likelihood for some parameters was dead flat, and iterations would wander off into never-never land.  Fitting was also very slow, because the optimizer called my likelihood function many times, and each time there were a lot of inefficient summations performed to construct the likelihood with current parameter values.  I figured out how to do the summations via matrix multiplication, which should be much faster, but never had time to return to work on this project.  Some charts of goodness of fit of my application to U.S. data occur in the latter part of a slide presentation in the accompanying material.\footnote{Wyant (2011)}  (The initial slides in this document relate to a revision of the Peto model -- see the previous section on different meso forecasting methods.)
+
+Several other HSW tweaking issues are:
+
+\begin{enumerate}
+  \item The model does not yet include an estimate of background risk.
+  \item The model at this point is only for males.
+  \item The age range is somewhat narrow.
+  \item A lot of emphasis is put on the "diagnostic trend" term -- accounting for possible missed cases in earlier years.  This element is given less emphasis -- or none at all -- in subsequent modeling efforts.  In Hogsdon (2005), the authors note that presence or absence of this term has essentially no impact on forecasts.
+  \item The original model in the HSE working paper assumed a long clearance half life of asbestos fibers from the lung.  Effectively, "no clearance" was assumed.  The assumption of nonclearance is not always made in subsequent models.  In the followup Hogsdon (2005) journal article, the authors fit both a clearance and a nonclearance model.  The two models gave very similar fits and forecasts.\footnote{Two of the model
+parameters, k (the power of time defining the increase in risk
+after exposure) and H (the half-life for clearance of asbestos from
+the lung), are closely correlated and cannot be independently
+estimated. The effect of reducing the half-life is to increase the
+best-fit value of k, but the fit of the model is affected only slightly.
+Since fitting the model with both H and k is unstable, we used two
+versions of the model, one with (effectively) no clearance
+(H¼1000 years) and the other with a clearance half-life of 15
+years – a value suggested from the modelling of mortality of the
+Wittenoom workforce (Berry, 1991).  Page 587.} 
+  
+The power of time since first exposure, \emph{k}, is hard to estimate independently of the clearance half life -- they are negatively correlated.  The nonclearance model gives \emph{k} within the 2-3 range, as was expected, and also yielded an exposure index over time that more closely matched the pattern of asbestos imports over time.  For these reasons, the authors expressed a (mild) preference for the nonclearance model. 
+  \item The model fits the power of time since first exposure, and gets a vale between 2 and 3 -- consistent with what one wouuld expect from the EPA 1986 models discussed above.  Subsequent fits of the the HSE model by these and other analysts sometimes just treat the power as fixed, and some (notably ARPC) calculate a fitted value that is less than 2 (something like 1.8, if I recall).
+  \item The predicted peak number of mesothelioma deaths in the UK is about 2,100.
+\end{enumerate}
+
+\subsection{ Bayesian refitting of the original HSE model(s) with MCMC }
+
+HSE analysts refit the HSE model using a Bayesian approach.\footnote{ HSE RR728 (2009), the HSE working paper, and Tan and Warren (2010), the subsequent journal article.}  As usual, there were tweaks to the model.  Many of the tweaks were just minor fiddling with the binning of the indices of exposure over time, and exposure by age.  One substantive addition was that of a background exposure rate parameter.  Background exposure was assumed to be related to age.\footnote{The background rate is represented by the number of cases
+per million in the male population. The age distribution of
+the background cases in each year is assumed to be (A-L)k. Page 431.} 
+
+The clearance half-life was set at 1,000,000.  This is really a nonclearance model! And, of course, the Bayesian framework allowed for the calculation of prediction intervals.  Basically, though, the fit and the projections from the model are by and large similar to what was produced with earlier classical optimization routines.  Note that we have several years more incidence data with which to fit our HSE model than was used in any of the model fits I have so far described.
+
+
+
 
 
 \section{Miscellaneous model fitting and forecasting issues}
