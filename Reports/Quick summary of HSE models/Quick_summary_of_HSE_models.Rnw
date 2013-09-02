@@ -160,7 +160,7 @@ Mesothelioma is almost entirely caused by asbestos exposure, and most of that ex
 \end{enumerate}
 
 
-\section{Mesotheloma projection methods}
+\section{Mesothelioma projection methods}
 
 Okay, so what is the HSE model?  HSE stands for "Health Safety Executive," a UK government agency that is sort of a hybrid of OSHA and the CDC.  Among other things, HSE tracks and report mesothelioma incidence (a lot better than we do).  And they have been active in recent years in creating and using new models for mesothelioma forecasting.  Note that I say "models".  Not only have they fit different models, but every time they fit "the same" model they tinker with it, so there are  models 1a, 1b, 1c, 2, 3, etc.  On top of that, the basic models have been adopted by actuaries and public health folks in the UK and in Australia, and with some of us here in the asbestos trust world.  All of us secondary adopters have done our own tinkering as well.  So "HSE model" is really more of a genus than a species.
 
@@ -229,7 +229,7 @@ ARPC and I have both done this kind of imputation, but the methods have been pre
 
 Most countries report their data to the OECD in a reasonably timely fashion.  So the OECD data, which are publicly available, represent a source from which we can get incidence data in a standard format.  If we ever feel like it, once we get the mdel fitting where we like it, we could write an article or build a website in which we report meso forecasts by country.  So work on your shiny and markdown chops.
 
-Inicidence data for HSE (and similar) model fitting pose the same challenges as demographic data for these uses: (1) going from grouped data to "by single year of age", and (2) extending the oldest age interval to single years of age, or to some finer grouping levels.  See the section below on demographic data.  Usually, parallel methods are used for the demographic and incidence data.
+Incidence data for HSE (and similar) model fitting pose the same challenges as demographic data for these uses: (1) going from grouped data to "by single year of age", and (2) extending the oldest age interval to single years of age, or to some finer grouping levels.  See the section below on demographic data.  Usually, parallel methods are used for the demographic and incidence data.
 
 Ad hoc methods are often necessary for breaking the oldest age interval into finer categories.  For example, Australian data usually go through age 85+, and UK datq through age 90+.  For most purposes, it would be adequate to more finely bin the Australian date by making use of the ratio (UK 90+ count) / ( UK 85+ count).
 
@@ -268,7 +268,7 @@ In R programs provided in the Rstudio project associated with this note, I have 
 
 Australia mesothelioma data through 2009 were downloaded from a spreadsheet found \href{http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0CFkQFjAB&url=http%3A%2F%2Fwww.aihw.gov.au%2FWorkArea%2FDownloadAsset.aspx%3Fid%3D60129542445&ei=_gEgUujUAZK7sQS664CoAw&usg=AFQjCNHK5mdE14OBYiRGn2mKJ99QdE5JYw&sig2=TLAj4Y0hCvBI8wTttkKUqg&bvm=bv.51495398,d.cWc}{here}.  Government summaries can be found \href{http://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0CF4QFjAC&url=http%3A%2F%2Fwww.safeworkaustralia.gov.au%2Fsites%2FSWA%2Fabout%2FPublications%2FDocuments%2F602%2FMESOTHELIOMA%2520IN%2520AUSTRALIA.doc&ei=ZFMjUsSvD-u3sQTbpoGYAQ&usg=AFQjCNE8hcc3odmiMYv0DkJASn3YuihkmA&sig2=LSGsne4YvK1NCYdQa7HKnA&bvm=bv.51495398,d.cWc}{here}.  These links may change when the data are updated.  I found that googling the terms AIHW, mesotheloma, and data got me to the desired sites.
 
-\begin{figure}
+\begin{figure}[ht]
 \vspace{.3in}
 \centering
 <<Chunk-aussie-males, dev='pdf',  echo=FALSE, message=FALSE, fig.caption=' ', fig.show='hold', fig.width=4, fig.height=4, out.width='4in', out.height='4in'>>= 
@@ -290,7 +290,7 @@ mp
 
 UK mesothelioma data through 2010 can were downloaded from a spreadsheet found \href{http://www.hse.gov.uk/statistics/tables/index.htm#lung}{here}.  These UK data reflect date of death, not date of diagnosis.  
 
-\begin{figure}
+\begin{figure}[ht]
 \vspace{.3in}
 \centering
 <<Chunk-uk-males, dev='pdf',  echo=FALSE, message=FALSE, fig.caption=' ', fig.show='hold', fig.width=4, fig.height=4, out.width='4in', out.height='4in'>>= 
@@ -306,10 +306,37 @@ mp
 \end{figure}
 
 \FloatBarrier
+\section{Demographic data for model fitting and forecasting}
 
-\section{Demographic data and death rate data for model fitting and forecasting}
 
-\section{Previous fits of the HSE model}
+Population counts are used as an exposure variable in the Poisson regression, and in forecasts made from it.  Historic population counts and death rates can be obtained from the Human Mortality Database.  See the program "Get populations and death rates" in the Rstudio project that accompanies this note.  The program downloads population and death rates for Australia, UK, and US, by gender.  The counts and rates are 1x1 -- age is not grouped, and there counts and rates for each individual year -- but can obviously be grouped if grouping is desired for consistency with meso incidence data.
+
+This R program also uses the demography package to generate Lee-Carter projections of the death rates.  These projected death rates can be used to translate the most recent population counts into future counts, for use in the HSE model projections.  Once we (well, you) have fit a satisfactory HSE model, we should probably do one projection just assuming that the most recent historic death rates will remain constant, and one using the projected death rates that continue to decline.
+
+In my past projections of U.S. mesothelioma incidence using an HSE model, I relied on the historic and projected death rates that the Social Security Administration uses.  See \url{http://www.ssa.gov/oact/NOTES/as120/LifeTables_Body.html}, authored by the wonderfully named Felicitie Bell (who wouldn't trust a forecast from her).  I had a number of conversations with back when I was projecting future tobacco mortality and health care costs for the U.S. DoJ civil rico case against the tobacco companies.
+
+I have all of those SSA rates in R formats from my previous work, both with tobacco and with my HSE modeling.  For now, I suggest we use the Lee-Carter projections for all three of our countries.  We can plug the SSA stuff in later on.  I have read that the SSA uses Lee-Carter projections, although that doesn't really seem to be the case based on Felicitie's description.  I'm not a demographer, so keep that in mind.  I think there are a number of newer methods of death rate projections that do better than Lee Carter by some measures,  but Lee-Carter still seems to be the most commonly applied method.
+
+\begin{figure}[ht]
+\vspace{.3in}
+\centering
+<<Chunk-us-demographic-example, dev='pdf',  echo=FALSE, message=FALSE, fig.caption=' ', fig.show='hold', fig.width=6, fig.height=6, out.width='6in', out.height='6in'>>= 
+
+setwd( US.demog.dir)
+
+load( 'qp.us.male.age.60.rdata')
+qp.us.male.age.60
+
+@
+\caption{ U.S. historic and projected death rates by year, 60 year-old men.}
+
+\vspace{.3in}
+\end{figure}
+
+Projected mesothelioma cases (and claims) increase if future death rates decrease, because when people live longer they are more likely to contract cancers like mesothelioma.  One issue that nobody but me seems to have thought about in making projections for estimating ultimate trust liabilities is that our exposed workforce may have lower median income than the U.S. as a whole.  (Or maybe not so much -- insulators (for example) don't usually become wealthy, but they were at least employed, frequently in well-paying union jobs.)  I suggest that we ignore this issue for now.  Down the line, we might want to think about it.  I provide some references in the accompanying material.\footnote{ Donkin (2002), Singh (2006), Waldron (2007)} In my previous HSE forecast, I adjusted death rates upwards using the Donkin articles.
+
+\FloatBarrier
+
 
 \section{Miscellaneous model fitting and forecasting issues}
 
