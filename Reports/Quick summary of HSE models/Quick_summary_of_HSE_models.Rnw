@@ -219,17 +219,25 @@ The basic biomedical models for risk of mesothelioma and lung cancer as a functi
 
 \section{Historic incidence data for model fitting}
 
-Assembling mesothelioma incidence data for the U.S. is more of a pain than it is for other countries.  The only (approximately) comprehensive national tumor registry is the USCCS, for which there is only five years or so of data.  The longest data record comes from the SEER system.  You many already be familiar with this system, in which case you can skipt to the next paragraph.  SEER-9 goes back the furthest.  It contains data from nine tumor registries that reporesent a substantial, but nonrandom, portion of the U.S. population.  Nonetheless, many researchers just apply incidence rates from SEER-9 to U.S. population counts (by sex and age group) to get estimated national incidence counts.  In the micro-world of asbestos disease estimation, there have been papers about "coastal bias".  These articles describe attempts to adjust for the fact that mesothelioma cases come disproportionately from coastal areas, due to shipbuilding exposure.  The SEER-9 data (it is argued) provide a skewed view of the U.S. because they don't adequately represent coastal regions.  I mention this issue just an historical aside -- it doesn't really affect what we're doing.
+\subsection{U.S. data}
+
+Recent (1999-2009) U.S. mesothelioma incidence data come from the USCS (United States Cancer Statistics) system.  This is a collection of registries that covers 98\% of the U.S. population.  Navigating the USCS website poses some challenges.  As of 9/03/13, the full downloadable data (all cancers, not just mesothelioma) live \href{http://www.cdc.gov/cancer/npcr/uscs/download_data.htm}{here}.  You can produce interactive tables of incidence by age and sex \href{http://apps.nccd.cdc.gov/uscs/cancersbyraceandethnicity.aspx}{here}.  These tables are useful for checking computer programs for extractiong mesothelioma data from the full downloads.  Also, if you need a quick download, you can download the interactively-produced age by incidence tables.
+
+Assembling mesothelioma incidence data for the U.S. is more of a pain than it is for other countries.  For years that precede the establishment of the USCS, the only (approximately) comprehensive national tumor registry is the SEER system.  You may already be familiar with this system, in which case you can skip to the next paragraph.  SEER-9 goes back the furthest.  It contains data from nine tumor registries that reporesent a substantial, but nonrandom, portion of the U.S. population.  Nonetheless, many researchers just apply incidence rates from SEER-9 to U.S. population counts (by sex and age group) to get estimated national incidence counts.  In the micro-world of asbestos disease estimation, there have been papers about "coastal bias".  These articles describe attempts to adjust for the fact that mesothelioma cases come disproportionately from coastal areas, due to shipbuilding exposure.  The SEER-9 data (it is argued) provide a skewed view of the U.S. because they don't adequately represent coastal regions.  I mention this issue just an historical aside -- it doesn't really affect what we're doing.
 
 Additional registries have been added to SEER over time, so as the years advance we start seeing, in addition to the SEER-9 series (which continues to be provided), SEER=11 and SEER=13.
 
-For the U.S., the gold standard is the USCS.  So the analytic challenge is to impute what USCS would have looked like had it been in existence as long as SEER-9 has.
+For the U.S., the gold standard is the USCS.  So the analytic challenge in building a complete historic record of U.S. incidence is to impute what USCS would have looked like had it been in existence as long as SEER-9 has.
 
-ARPC and I have both done this kind of imputation, but the methods have been pretty crude.  For initial fits of the HSE model, I suggest that you use UK and Australian meso incidence data.  These data are provided in easily used formats, and tend to be more up-to-date than the U.S. data.  In addition, since most of the development and use of the HSE model has been in these countries, we can compare our initial fits and predictions to those that have been published.  (I'm not looking for identical results -- our data are likely to be of slightly different vintage, and there are a variety of minor tweaks that have been made to the HSE model by different analysts.)
+ARPC and I have both done this kind of imputation, but the methods have been pretty crude.  For initial fits of the HSE model, I suggest that you use UK and Australian meso incidence data.  These data are provided in easily used formats, and tend to be more up-to-date than the U.S. data.  In addition, since most of the development and use of the HSE model has been in these two countries, we can compare our initial fits and predictions to fits and predictions that have been published.  (I'm not looking for identical results -- our data are likely to be of slightly different vintage, and there are a variety of minor tweaks that have been made to the HSE model by different analysts.)
 
-Most countries report their data to the OECD in a reasonably timely fashion.  So the OECD data, which are publicly available, represent a source from which we can get incidence data in a standard format.  If we ever feel like it, once we get the mdel fitting where we like it, we could write an article or build a website in which we report meso forecasts by country.  So work on your shiny and markdown chops.
+\subsection{OECD data}
 
-Incidence data for HSE (and similar) model fitting pose the same challenges as demographic data for these uses: (1) going from grouped data to "by single year of age", and (2) extending the oldest age interval to single years of age, or to some finer grouping levels.  See the section below on demographic data.  Usually, parallel methods are used for the demographic and incidence data.
+Most countries report their data cancer incidence to the OECD in a reasonably timely fashion.  So the OECD data, which are publicly available online, represent a source from which we can get incidence data in a standard format.  If we ever feel like it, once we get the mdel fitting where we like it, we could write an article or build a website in which we report meso forecasts by country.  So work on your shiny and markdown chops. The U.S. reports only the USCS data to the OECD.  It is usually more laggard than other developed counteries about doing this in a timely fashion.
+
+\subsection{Use of mesothelioma incidence data in fitting HSE and releated models}
+
+Incidence data for HSE (and similar) model fitting pose the same challenges as demographic data do for HSE fitting: (1) going from grouped data to "by single year of age", and (2) extending the oldest age interval to single years of age, or to some finer grouping levels.  See the section below on demographic data.  Usually, parallel methods are used for the demographic and incidence data.
 
 Ad hoc methods are often necessary for breaking the oldest age interval into finer categories.  For example, Australian data usually go through age 85+, and UK datq through age 90+.  For most purposes, it would be adequate to more finely bin the Australian date by making use of the ratio (UK 90+ count) / ( UK 85+ count).
 
@@ -260,7 +268,7 @@ In R programs provided in the Rstudio project associated with this note, I have 
 
 
 
-\subsection{Australia}
+\subsection{Australia data}
 
 % The hyperref package is smart enough to sanitize the latex special characters in thge following links.
 % However the Rstudio editor for Rnw files is not that smart, so the text coloring will change 
@@ -286,7 +294,7 @@ mp
 
 \FloatBarrier
 
-\subsection{UK}
+\subsection{UK data}
 
 UK mesothelioma data through 2010 can were downloaded from a spreadsheet found \href{http://www.hse.gov.uk/statistics/tables/index.htm#lung}{here}.  These UK data reflect date of death, not date of diagnosis.  
 
@@ -306,6 +314,9 @@ mp
 \end{figure}
 
 \FloatBarrier
+
+
+
 \section{Demographic data for model fitting and forecasting}
 
 
@@ -370,17 +381,34 @@ The power of time since first exposure, \emph{k}, is hard to estimate independen
 
 \subsection{ Bayesian refitting of the original HSE model(s) with MCMC }
 
-HSE analysts refit the HSE model using a Bayesian approach.\footnote{ HSE RR728 (2009), the HSE working paper, and Tan and Warren (2010), the subsequent journal article.}  As usual, there were tweaks to the model.  Many of the tweaks were just minor fiddling with the binning of the indices of exposure over time, and exposure by age.  One substantive addition was that of a background exposure rate parameter.  Background exposure was assumed to be related to age.\footnote{The background rate is represented by the number of cases
-per million in the male population. The age distribution of
-the background cases in each year is assumed to be (A-L)k. Page 431.} 
+HSE analysts refit the HSE model using a Bayesian approach.\footnote{ HSE RR728 (2009), the HSE working paper, and Tan and Warren (2010), the subsequent journal article.}  As usual, there were tweaks to the model.  Many of the tweaks were just minor fiddling with the binning of the indices of exposure over time, and exposure by age.  One substantive addition was that of a background exposure rate parameter.  Background exposure was assumed to be related to age.\footnote{The background rate is represented by the number of cases per million in the male population. The age distribution of
+the background cases in each year is assumed to be (A-L)\textsuperscript{k}. Page 431.} 
 
 The clearance half-life was set at 1,000,000.  This is really a nonclearance model! And, of course, the Bayesian framework allowed for the calculation of prediction intervals.  Basically, though, the fit and the projections from the model are by and large similar to what was produced with earlier classical optimization routines.  Note that we have several years more incidence data with which to fit our HSE model than was used in any of the model fits I have so far described.
 
+\subsection{Adoption of the HSE model(s) by actuarial societies and public health analysts}
+
+Actuarial societies in the UK\footnote{Gravelsons (2010).} and Australia\footnote{I couldn't find the reference right away, but I think it's by Lowe.} did public, systematic reviews of available mesothelioma forecasting models and selected the HSE model as the best.  The UK insurers face about \$18 billion in estimated liability for such claims.  Some public health analysts in Australia started using HSE models as well.\footnote{Clements (2007a) and Clements (2007b)}
+
+\subsection{Initial use of the HSE model(s) in the U.S. asbestos trust world}
+
+I fit a version of the HSE model to U.S. data in 2010, as I have mentioned in a couple of places.\footnote{ Wyant (2011), which also discusses revision of the Peto model.}  When ARPC saw my stuff, they decided to both revise their Peto model, and do their own fit of the HSE model.\footnote{ ARPC (2011a); ARPC (2011b).}  I consulted with them on both.  ARPC now uses their mode, but they do a simple model averaging of four models.  The HSE model gives the highest forecasts, but because they use the median of their four forecasts, the fact that the HSE models gives substantially higher values than the other three is effectively ignored.
+
+Both my revised Peto and my HSE models seem to yield higher forecasts than ARPC's.  I don't know why.  I would like to revisit this in detail with them at some point, but I want to have carefully gotten all my ducks in a row -- with your help -- before doing so.  One thing about their HSE fit -- they get a \emph(k) value of 1.86 or thereabouts, outside the ideal range of between two and three.
+
+I would also like to launch a campaign with them to put more weight on the HSW result.  One argument is, as I alluded to earlier, is that Stallard and Manton have revised their forecasting model and are now getting forecasts more like our HSE forecasts -- about 30\% higher than the old Nicholson model.
+
+\subsection{More recent HSE models -- two-stage clonal and "imports-based"}
 
 
+\section{Our HSE modelling plan}
 
 
-\section{Miscellaneous model fitting and forecasting issues}
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=6in]{Clements_technical_appendix}
+      \caption{Clements 2000b technical appendix.  Template for our HSE fit.}
+\end{figure}
 
 
 \end{document}
