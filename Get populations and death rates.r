@@ -79,8 +79,8 @@ options( stringsAsFactors=FALSE)
 # Collect population, historic and projected death rates from Human Mortality Database
 # ====================================================================================
 Aus.demog = hmd.mx('AUS', 'tw@deciph.com', 'TW_HumanMortality', 'Australia')
-UK.demog = hmd.mx('GBR_NP', 'tw@deciph.com', 'TW_HumanMortality', 'UK')
-US.demog = hmd.mx('USA', 'tw@deciph.com', 'TW_HumanMortality', 'US')
+UK.demog  = hmd.mx('GBR_NP', 'tw@deciph.com', 'TW_HumanMortality', 'UK')
+US.demog  = hmd.mx('USA', 'tw@deciph.com', 'TW_HumanMortality', 'US')
 
 # Populations
 head(US.demog$pop$male)
@@ -111,8 +111,8 @@ example = rbind( historic.death.rate.male.60, example)
 death.rate.p = ggplot( example, aes( year, death.rate, color=source) )
 death.rate.p + geom_point() + labs( title='Death rates, 60 year-old U.S. male')
 
-qplot( year, death.rate, data=example, color=source, ylim=c(0,.03)) + labs( title='Death rates, 60 year-old U.S. male')
-                       
+qp.us.male.age.60 = qplot( year, death.rate, data=example, color=source, ylim=c(0,.03)) + labs( title='Death rates, 60 year-old U.S. male')
+qp.us.male.age.60                      
                        
 # ====================================================================================
 # Save datasets
@@ -127,10 +127,10 @@ setwd( Aus.demog.dir)
 save( Aus.demog, Aus.fcast.f, Aus.fcast.m, file='Australia pop, hist and proj death rates.rdata')
 
 
-UK.LC.f    = lca( US.demog, 'female')
-UK.LC.m    = lca( US.demog, 'male')
-UK.fcast.f = forecast( US.LC.f)
-UK.fcast.m = forecast( US.LC.m)
+UK.LC.f    = lca( UK.demog, 'female')
+UK.LC.m    = lca( UK.demog, 'male')
+UK.fcast.f = forecast( UK.LC.f)
+UK.fcast.m = forecast( UK.LC.m)
 
 setwd( UK.demog.dir)
 save( UK.demog, UK.fcast.f, UK.fcast.m, file='UK pop, hist and proj death rates.rdata')
@@ -138,3 +138,10 @@ save( UK.demog, UK.fcast.f, UK.fcast.m, file='UK pop, hist and proj death rates.
 
 setwd( US.demog.dir)
 save( US.demog, US.fcast.f, US.fcast.m, file='US pop, hist and proj death rates.rdata')
+
+
+# ====================================================================================
+# Save the plot for the report that describes HSE modeling tasks
+# ====================================================================================
+setwd( US.demog.dir)
+save( qp.us.male.age.60, file = 'qp.us.male.age.60.rdata')

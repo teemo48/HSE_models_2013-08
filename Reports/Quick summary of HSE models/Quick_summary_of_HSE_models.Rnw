@@ -221,7 +221,7 @@ The basic biomedical models for risk of mesothelioma and lung cancer as a functi
 
 \subsection{U.S. data}
 
-Recent (1999-2009) U.S. mesothelioma incidence data come from the USCS (United States Cancer Statistics) system.  This is a collection of registries that covers 98\% of the U.S. population.  Navigating the USCS website poses some challenges.  As of 9/03/13, the full downloadable data (all cancers, not just mesothelioma) live \href{http://www.cdc.gov/cancer/npcr/uscs/download_data.htm}{here}.  You can produce interactive tables of incidence by age and sex \href{http://apps.nccd.cdc.gov/uscs/cancersbyraceandethnicity.aspx}{here}.  These tables are useful for checking computer programs for extractiong mesothelioma data from the full downloads.  Also, if you need a quick download, you can download the interactively-produced age by incidence tables.
+Recent (1999-2009) U.S. mesothelioma incidence data come from the USCS (United States Cancer Statistics) system.  This is a collection of registries that covers 98\% of the U.S. population.  Navigating the USCS website poses some challenges.  As of 9/03/13, the full downloadable data (all cancers, not just mesothelioma) live \href{http://www.cdc.gov/cancer/npcr/uscs/download_data.htm}{here}.  You can produce interactive tables of incidence by age and sex \href{http://apps.nccd.cdc.gov/uscs/cancersbyraceandethnicity.aspx}{here}.  These tables are useful for checking computer programs for extractiong mesothelioma data from the full downloads.  Also, if you need a quick download, you can download the interactively-produced age by incidence tables.  You can create and download corresponding U.S. population tables here as well. 
 
 Assembling mesothelioma incidence data for the U.S. is more of a pain than it is for other countries.  For years that precede the establishment of the USCS, the only (approximately) comprehensive national tumor registry is the SEER system.  You may already be familiar with this system, in which case you can skip to the next paragraph.  SEER-9 goes back the furthest.  It contains data from nine tumor registries that reporesent a substantial, but nonrandom, portion of the U.S. population.  Nonetheless, many researchers just apply incidence rates from SEER-9 to U.S. population counts (by sex and age group) to get estimated national incidence counts.  In the micro-world of asbestos disease estimation, there have been papers about "coastal bias".  These articles describe attempts to adjust for the fact that mesothelioma cases come disproportionately from coastal areas, due to shipbuilding exposure.  The SEER-9 data (it is argued) provide a skewed view of the U.S. because they don't adequately represent coastal regions.  I mention this issue just an historical aside -- it doesn't really affect what we're doing.
 
@@ -400,15 +400,73 @@ I would also like to launch a campaign with them to put more weight on the HSW r
 
 \subsection{More recent HSE models -- two-stage clonal and "imports-based"}
 
+Recently, HSE analysts published results of additional model fits.\footnote{HSE RR876 (2011).}  The working paper has the regrettable title "... revised and two-stage clonal models."  A better summary of what they did is:
+
+\begin{enumerate}
+  \item Fit one alternative "imports-based" HSE model in which historic annual imports of asbestos in the UK are used as an independent variable,
+  \item Fit a "two-stage clonal" HSE model, an attempt to reflect some recent mathematical models of tumor development,
+  \item Fit the "old" HSE model to get a model for women, albeit with usual tweaks to deal with the new data, achieve convergence of numerical methods, etc. -- hence the quotes around "old",
+  \item Basically concluded that the "old" HSE model is still the best model.
+\end{enumerate}
+
+The tone and style of this report smacks (to me) of either (1) we have all this machinery, let's get a quick publication by fitting a couple of alternative models, or (2) somebody higher than us in the chain of command keeps asking about these other models -- let's just fit 'em to get them off our backs so we can get back to doing something useful.  Unfortunately, the authors of this report did not overtly say that the "old" HSW model is still the model of choice."  This caused someone (after I had given a presentation on our version of the HSE model for the U.S.) to circulate and email to audience members saying that "the HSE has discarded the model that Tim is using."
+
+In fact, what them authors said was:
+
+\begin{enumerate}
+  \item The estimated of 2,100 mesothelioma cases at the peak is still our best estimate [this is the estimate from the old HSE model],
+  \item The upper bound on future mesothelioma cases is the upper bound calculated for the old HSE model, and
+  \item The way we will fit the model for women is the old HSE model (with the usual tweaks and upgrades).
+\end{enumerate}
+
+This all says to me that they still think the old HSW model is the best practice -- they just don't say so in a simple declarative sentence.
+
+The notion of an "imports-based" model makes some intuitive sense.  Using imports (or mining output, but in the cases of the UK and the U.S. import almost all the asbestos is imported) should add information.  In the UK, it doesn't matter much.  The index of asbestos exposure over time produced by fitting the HSE model mirrors pretty closely the import records.  (In fact, some of the earlier HSE papers use "closeness to imports" as a guide in choosing between a couple of model tweaks.)
+
+In Australia, the actuarial society (or somebody like that) compared different forecasting models, including the imports-based model (in Australia, probably the mining-based model) -- which they called the "latency model" (who knows why) -- and concluded that the imports-based model did not fit well, and that the HSE model was superior.
+
+My fit of the HSE model yielded an index of exposure over time that does not match the record of U.S. imports.  I have no idea why.  Poor imports data (e.g., how much was then re-exported?).  Some mistake that I made?  Change in the mix of manufacturing and construction processes that use asbesto, with resulting changes in intensity of exposure?  Change in the type of processes?  Change in job safety standards?  (Nobody seems to believe the latter.)  Who knows.  In any event, once you have fit a new HSE model for the U.S., a subsequent step will be to fit an imports-bassed model.  The U.S. imports data are in the accompanying materials.\footnote{USGS (1997)}
+
+I don't know anything about the two-stage clonal model, but we should look at fitting that one once we have gotten more important things out of the way.
+
 
 \section{Our HSE modelling plan}
 
+The word "template" is too strong, but I would like to use something like the model fit by CLements\footnote{Clements 2007b} as a starting point.  See Figure 5. 
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=6in]{Clements_technical_appendix}
-      \caption{Clements 2000b technical appendix.  Template for our HSE fit.}
+      \caption{Clements 2000b technical appendix.  Possible starting point for our HSE fit.}
 \end{figure}
+
+Here are my thoughts about working off of this model:
+
+\begin{enumerate}
+  \item I don't like the HSE's baseline HSE model (and the similar one that I originally fit using optim()) because it uses too many degrees of freedom and too ad hac an approach to building indices of exposure over time and exposure as a function of age.  I thought splines would be a better way to go -- as did Clements.  However, I'm not totally sold on his splines.  I do think some assymetry in the indices is good to incorporate, which to me means perhaps three degrees for freedom for each of the two splines, not two.  I haven't quite followed the significance of his knot placement.  I think I understand roughly how he's forcing the indices to have fixed values at certain points, but my level of understanding is probably lower than I think.  Anyway, we're into your territory now, so I leave you to deal with this issue, and (I hope) educate me a bit.
+  \item I don't know about using numeric integration, rather than discrete summing.  Discrete summing can be slow, as I found out, but could presumably be speeded up by matrix multiplication or other cleverness.  Plus, fits will go faster simply due to usine fewer and better-defined independent variables.  Anyway, I again turn to you.  Maybe numeric integration is the bee's knees.
+  \item As other articles I have cited would indicate, halflife and the k exponent are negatively correlated, and models that try to fit both of them are unstable.  I don't know why Clements chose to make both of them fixed, and at extreme values.  (They're not extreme in a way -- due to the negative correlation you can get the same fit making the exponent big and the halflife small as you get with more moderate values.)  Given the discussions in the other articles, I would tend to fit \emph{k} and ignore half-life -- or fix halflife at 1,000,000 years as one paper did.  For one thing, there is some biological validation of our fit if the estimated \emph{k} is between 2 and 3, as it was in my fit of the HSE model.
+  \item I think beta in the Clements model is basically the background rate.  I would like to fit a background rate.  As discussed above, assuming that the background rate increases with age makes sense -- we might add that.  This is not a big issue in a way, as background rates are small.  But it again lends some biologic validation to our model if we fit a background rate and it is indeed small.
+  \item Clements uses stats4::mle(), rather than optim().  Of course, mle() is just a wrapper for optim().  I have not used mle(), but it has seemed to me a good thing to consider where (as here) one is optimizing a likelihoodl.  It would seem to clarify how exactly we are using a poisson regression (not clear at all in the early HSE papers), and I think could yield some initial error bounds by numericalluy inverting the second derivative matrix. There is also now bbmle::mle2() to consider.  Anyway, I leave all this in your capable hands, hoping again for some education down the line that is simple enought for me to absorb.
+  \item In U.S. meso incidence data, I have noticed a flattening in the incidence rates somewhere above age 80.  This may reflect underdiagnosis.  If an oldster in a nursing home with pneumonia dies, I don't think anybody will be requesting an autopsy to see if there is something else going on in the lung region.  However, "flattening" has been an issue from time to time in the meso modeling literature.  Some analysts find it hard to believe that risk can go up indefinitely as a power of two or three.  But in any event, I have found it useful to build in a "flattening age" like at 85 in my modeling. You might consider doing the same, at least as a check.
+  \item I don't know about fitting to midpoints of age ranges, as Clements does.  Certainly it should make initial fitting routines run a little faster.  In the past, I have converted to single-year-of-age by applying splines to cumulative incidence by age in each calendar year.  It would certainly seem necessary to do something like this in the forecasts, where we need annual forecasts and it is hard to calculate how many people move from one age group to the next in a year without -- you know -- actually calculating what happens at the single year of age level.  But I again leave this kind of pondering to you. 
+  \item I think (I think you would have done this anyway) we should get a standard numerical fit before moving on to Rjags.  I also think we should start by fitting to UK and/or Aussie data, as these data are tidy, and the we can also check our fit against the several fits in the literature.
+  \item You would do this anyway, but just so I have a reminder here for myself -- the modeling programs should generate the kinds of diagnostic fit plots that appear in my and ARPC's presentations\footnote{ARPC 2011a, Wyant 2011}, including plots of the indices overlaid by import data, and also some measures of goodness of fit like log-likelihood, AIC, etc.  And we need some error bounds on forecasts and on parameters such as \emph{k}.
+  \item Next up in rough priority after doing a new "standard" U.S. male model is to:
+  \begin{enumerate}
+  \item Compare with my and ARPC's HSE fits,
+  \item Do some forecasts for individual trusts -- as I say, this has been done by outputting historic and projected U.S. national counts by birth cohort group, identifying a stable claimiing period in the trust history, calculating trust to U.S. ratios by birth cohort, and then applying these ratios to the projected U.S. counts from the HSE model.;
+  \item Do a female model,
+  \item Do a combined forecast of male plus female,
+  \item Fit some kind of imports-based model,
+  \item Take a look at the two-stage clonal model, and
+  \item Look at an Rjags fit.
+\end{enumerate}
+
+\end{enumerate}
+
+
+
 
 
 \end{document}
