@@ -1,0 +1,431 @@
+%% HSE_Poisson_regression
+%% Note: Best to have no blanks in the Rnw file name
+
+% Basic Poisson models, described a little more clearly (to me)
+% than in many of the published articles
+
+% Latex preamble using Koma-Script
+% Based on preamble used in Kaiser report for FCR in October 2013
+
+\documentclass[paper=letter,listof=leveldown,appendixprefix=true]{scrreprt}\usepackage{graphicx, color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\definecolor{fgcolor}{rgb}{0.2, 0.2, 0.2}
+\newcommand{\hlnumber}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlfunctioncall}[1]{\textcolor[rgb]{0.501960784313725,0,0.329411764705882}{\textbf{#1}}}%
+\newcommand{\hlstring}[1]{\textcolor[rgb]{0.6,0.6,1}{#1}}%
+\newcommand{\hlkeyword}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlargument}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlcomment}[1]{\textcolor[rgb]{0.180392156862745,0.6,0.341176470588235}{#1}}%
+\newcommand{\hlroxygencomment}[1]{\textcolor[rgb]{0.43921568627451,0.47843137254902,0.701960784313725}{#1}}%
+\newcommand{\hlformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hleqformalargs}[1]{\textcolor[rgb]{0.690196078431373,0.250980392156863,0.0196078431372549}{#1}}%
+\newcommand{\hlassignement}[1]{\textcolor[rgb]{0,0,0}{\textbf{#1}}}%
+\newcommand{\hlpackage}[1]{\textcolor[rgb]{0.588235294117647,0.709803921568627,0.145098039215686}{#1}}%
+\newcommand{\hlslot}[1]{\textit{#1}}%
+\newcommand{\hlsymbol}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlprompt}[1]{\textcolor[rgb]{0.2,0.2,0.2}{#1}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+                      % listof option suppresses page breaks between toc, listoffigures, etc.)
+
+ \usepackage[english]{ babel}
+
+\usepackage{amsmath}  % extended mathematics
+\usepackage{units}    % non-stacked fractions and better unit spacing
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{15.2pt}
+\pagestyle{fancyplain} % Has to be here for headers to appear
+
+\usepackage{parskip}   % Insert a blank line between paragraphs
+
+% Koma-script recommends using package typearea, but geometry works
+%usepackage[margin=1in]{geometry}
+
+% For package xtable
+\usepackage{booktabs}  % Nice toprules and bottomrules
+\heavyrulewidth=1.5pt  % Change the default to heavier lines
+\usepackage{longtable} % Tables that span more than one page
+\usepackage{rotating}  % To rotate a page sideways
+\usepackage{tabularx}  % To control the width of the table
+
+\usepackage[labelfont=bf]{caption}
+
+\usepackage{setspace}
+
+\usepackage[title,titletoc]{appendix}
+
+
+\usepackage{hyperref}  % Hyperlinks within the document, also to urls using \url{}
+\hypersetup{           % Removing the red boxes
+    colorlinks,
+    urlcolor=blue,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+}
+    %citecolor=black,
+    %filecolor=black,
+    %linkcolor=black,
+
+
+\begin{document}
+                     
+
+
+
+
+
+
+% Confidential cover page header (if needed)
+% \renewcommand{\thispagestyle}[1]{} % Prevent maketitle for suppressing header on page 1
+% \fancyhf{}
+% \chead{\textcolor{red}{PRIVILEGED AND CONFIDENTIAL -- DRAFT -- NOT FOR DISTRIBUTION}}
+
+
+\title{ Summary of Poisson Models for Mesothelioma Incidence Projections:\n
+as used in HSE models}
+\author{Timothy Wyant}
+\date{ 12/21/13}
+\maketitle
+
+
+\fancyhf{}                          % clear all header and footer fields for pages after the title page
+\renewcommand{\headrulewidth}{0pt}  % also clear the header horizontal bar
+\fancyfoot[C]{\thepage}             % now add a center page number back to the footer
+
+\setcounter{page}{1}
+\tableofcontents
+\listoftables
+\listoffigures
+
+\chapter{Introduction}
+
+\end{document}
+
+In August 2013, the Kaiser Trust solicited reports from experts for the TAC (Mark Peterson, LAS) and the FCR on the need for a revision to the current payment percentage of 35\%.  Mark submitted a report in mid-September.  This report summarizes my analysis of the need for a payment percentage revision.\footnote{I frequently confer and exchange reports with Mark and Dan, so without intending any disrespect I will refer to them as Mark and Dan in this report.  I am happy to do a global replace to "Dr. Peterson" and so forth if they so desire.} 
+
+Table \ref{tab:prelim.results} summarizes my results.  
+
+\vspace{.3in}
+\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'pp.table' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'new.table' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'new.table' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'new.table' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'new.table' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'xt' not found}}\end{kframe}
+
+\vspace{.3in}
+
+Mark Peterson's net present values in Table \ref{tab:prelim.results} come from his September report to the Trust.\footnote{ \emph{Projected Liabilities for the Kaiser Aluminum \& Chemical Corporation Asbestos Personal Injury Trust, As of July 31, 2013}, Mark Peterson and Dan Relles, Legal Analysis Systems, September 2013.  His low and high values come from page 35.  His preferred value comes from page 1.}  He assumes that the Trust has assets as of June 30, 2013 valued at \$711 million.\footnote{This figure comes from a report by Morrison \& Morrison to the Trust from July.  I believe there may still be some future insurance recoveries scheduled, and I assume that this report assigns them a net present value.} Peterson calculates a net present value of \$45 million in projected Trust expenses over the life of the Trust, leaving \$666 million in assets for paying claims.\footnote{LAS report, page 34.}
+
+\section{Payment percentage with my starting estimate of liability}
+
+As Table \ref{tab:prelim.results} shows, my starting estimate of Trust liability is \$1,734.9 million.\footnote{All of my liability estimate are stated in net present value (NPV), so they can directly compared with Mark's estimates.}   This is very close to Mark's "preferred estimate" of \$1,740.0 million.  (These are "gross" estimates of liability -- that is, before application of a payment percentage.)  The payment percentage that corresponds to my starting estimate of liability is 38.4\%, very slightly higher than Mark's preferred payment percentage of 38.3\%.  The current Kaiser Trust payment percentage is 35\%.
+
+In calculating my starting estimate of \$1,734.9 million, I adopted the same assets, expenses, and discount rate that Mark assumes. I assumed a "runoff curve" -- the curve that determines how fast claims are likely to decline -- to be the Nicholson curve from 1983 that Mark typically prefers.  I assumed no adjustment for inflation in making future claims payments, which I understand to be Mark's assumption as well.
+
+I did not assume any increase in "propensity to sue", as Mark did in some of the alternative scenarios in his report.  I used somewhat different methods than Mark to calculate the probability that a claims for a given injury, option, and deferral status will ultimately be paid, but as can be seen from the proximity of his preferred estimate to my starting estimate, these differences are not very important in the present context.
+
+
+\section{Payment percentage adjusting liability for inflation}
+
+As I understand it, Mark does not assume any inflation adjustment to future claims values.\footnote{LAS report, page 35.}  When I assume a 2\% inflation rate, as Table \ref{tab:prelim.results} shows, my liability estimate increases by 15\%, from \$1,734.9 million to \$1,998.6 million.
+
+I get my 2\% inflation figure from the most recent forecast of the Federal Reserve.\footnote{Economic Projections of Federal Reserve Board Members and Federal Reserve Bank Presidents, June 2013,  \url{http://www.federalreserve.gov/monetarypolicy/files/fomcprojtabl20130619.pdf}} This forecast is for the Personal Consumer Expenditure Index of inflation (PCE).  The more familiar Consumer Price Index (CPI) tends to run about half a point higher than the PCE.  Many economists prefer the CPI.\footnote{CPI vs. PCE Inflation: Choosing a Standard Measure, \url{http://www.stlouisfed.org/publications/re/articles/?id=2390}} The CPI is a commonly used benchmark for adjusting things like pension payments for cost-of-living increases.  It is used that way by Social Security. It is used that way by asbestos trusts that adjust payments for inflation.
+
+Using a CPI-based inflation rate of 2.5\% to adjust Trust payments would be reasonable.  It is a percentage that other experts use to adjust asbestos trust payments for inflation.  (In fact, when experts make such an adjustment, it is the only index I have seen used.) Using the CPI would increase my liablity estimate and lower the corresponding payment percentage.  However, in the present calculations, I use the lower PCE index.
+
+It is important to distinguish between two different questions: (1) Should the Trust adjust its current payments for inflation, and if so by how much?; and (2) should the Trust set aside enough money to make inflation adjustments in the future?  Although the two questions are not totally unrelated, the motivation for my inflation adjustment relates to question 2.
+
+For a hypothetical example, take a mesothelioma claimant who is diagnosed at age 65, and files a claim in the year of diagnosis.  Assume he/she files an IR claim this year, and is awarded \$40,000.  (This is a hypothetical amount, but is in a realistic ballpark.)
+
+Based on a 2\% inflation rate, if a 65 year-old claimant with the same characteristics files a claim in 2025, the Trust will need to pay this second claimant 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\\Error in eval(expr, envir, enclos) : \\\ \ object 'standard.value.2025' not found}}, not for \$40,000, if it wants to pay the 2013 claimant and the 2025 claimant in an equitable manner.  Similarly, the Trust will need to pay an identical claimant in 2035 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\\Error in eval(expr, envir, enclos) : \\\ \ object 'standard.value.2035' not found}} if the payments are to be equitable.  In 2045, the required payment will be 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\\Error in eval(expr, envir, enclos) : \\\ \ object 'standard.value.2045' not found}}.\footnote{The circumstances of the hypothetical claimant are not important.  I could have chosen a 75 year-old lung cancer claimant in expedited review, or an 85 year-old "other cancer" claimant with two dependents in individual review.  The point is that to pay an identical claimsnt equitably at different points in the Trust's history, there needs to be an inflation adjustment.}    
+
+This is not some radical view of what constitutes equitable payments over time, concocted just for use in asbestos trusts.  It is overwhelmingly the standard way economists and similar professionals define "equitable" for such payments.  These are calculations that are constantly made in a variety of situations.
+
+Put somewhat differently, if the Trust does not make routine inflation adjustments, our hypothetical claimant in 2045 would receive in real dollars only 47\% of what a similar claimant (in terms of injury, option election, age at diagnosis, etc.) received at the beginning of the Trust in 2007. 
+
+The immediate question is not "Should the Trust adjust payments now?" but "Is the Trust setting aside enough money so that when our hypothetical claimant arrives at the door in 2045, it will be able to pay him/her 
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\\Error in eval(expr, envir, enclos) : \\\ \ object 'standard.value.2045' not found}}?"
+
+When Mark and I calculate what will happen with no inflation adjustments, using our "preferred" (Mark) or "starting" (me) forecasts, we each calculate a payment percentage that is slightly higher than the current 35\%.  This means that (if we are right in terms of other asssumptions) the Trust is setting aside \emph{some} money for future contingencies.  Is it setting aside enough money to make the inflation-adjusted payments listed above?
+
+The only way to determine this is to run a cash flow model inserting an annual inflation rate, and see if the money runs out.  This is what I did, and the money does appear to run out.  To pay claims in an equitable manner over the life of the Trust, the Trust will have to retain more money today, by lowering the payment percentage to 33.3\%.
+
+
+
+\section{Payment percentage adjusting for demographics of the exposed workforce -- modern runoff curves}
+
+Setting aside (temporarily) the inflation adjustment issue, Table \ref{tab:prelim.results} shows that when I switch from the 30 year-old projections of how fast disease incidence among exposed workers will decline over the next 40-50 years to projections that are currently being made by demographers and epidemiologists, my Kaiser liability estimate increases to \$2,139.5 million.  The associated payment percentage is 31.1\%.
+
+Disease forecasts are considered more reliable if they are based on scientific knowledge, and make use of as much relevant information as possible.  For example, they typically need to take into account lifespans.  Life expectancy has increased over the past 30 years, and is still increasing.  Cancers like mesothelioma and lung cancer are in a sense "diseases of aging."  The longer people live, the more such cancers will occur in a population, all else equal.  The Trust, if I understand Mark's methods correctly, is implictly assuming that life expectancies are the same now as they were 30+ years ago, and will not increase in the future.  Forecasts that make such an assumption will tend to understate the number of future disease claims.
+
+The issue of increasing life expectancy has been prominent in the news lately because of its relationship to the long-term solvency of the Social Security system.  For entitities that make payments long into the future, changes in life expectancy can have profound effects.
+
+Another issue in making up-to-date and reliable forecasts is adjustment for the demographic and exposure profiles of the exposed workers.  If Trust A is paying claims to workers who are (a) younger than workers filing claims against Trust B, and (b) exposed more recently than workers filing claims against Trust B, then claiming rates will tend to drop off less slowly in the future at Trust A than at Trust B.  Or put another way, if a trust is using forecasts based on demographic profiles from 30 years ago that project an exposed population today that is older and less recently exposed than now appears to be the case, then such a trust will tend to underestimate the number of future claims.   
+
+Mark estimates declining incidence of asbestos disease in the future based on Nicholson's forecasts made 30 years ago, in 1983.  The current exposed worker population is younger than what Nicholson projected.  In addition, current and future life expecatncies are higher than what Nicholson assumed.  Both of these factors would cause his models to understate the rates at which asbestos diseases will continue to occur -- there will likely be more exposed workers filing claims in the future than Nicholson projected.  
+
+Recent scientific literature has proposed newer forecasting models that take into account the actual demographic profile of exposed workers, and current and projected U.S. life expectancies.  In making my "demographic-adjusted" estimates summarised in Table \ref{tab:prelim.results}, I used projection models devoloped by Duke demographers Stallard and Manton.\footnote{ A scientific article by Professor Stallard describing the basic forecasting model is Eric Stallard, "Product Liability Forecasting for Asbestos-Related Personal Injury Claims," \emph{Annals of the New York Academy of Sciences}, 954:1, John Wiley, 2001.  He and Dr. Manton have also published a book on the model.  In 2007 he updated the model, and described the update during the W.R. Grace estimation hearings.  In these various forums, he has described how to "recalibrate" his model and run it for specific trusts or using updated demographic information.  Asbestos trust experts have updated and applied his model at other trusts.} 
+
+Other epidemiologists and reaserchers have published even more recent scientific articles on updated asbestos diesease forecasting models.  These "HSE models" are used by a number public health professionals and insurance actuaries, who in turn have published reports on their use of these models in practice.\footnote{HSE stands for "Health Safey Executive", a UK scientific and regulatory agency.  The HSE models were developed in the UK, but are generic.  They can be applied to U.S. data, just as models developed in the U.S. -- such as "KPMG Nicholson" -- have been applied in other countries. Both I and Analysis Research Planning Corporation (ARPC) have calculated these "HSE" models to project the rate at which asbestos disease incidence will decline in the U.S. for U.S. asbestos disease trusts.  ARPC uses these models in conjunction with other models, using a form of model-averaging.}
+
+Figure \ref{fig:declines} compares different runoff curves for mesothelioma.  In my projections, I use the Stallard curve, which is a compromise between the Nicholson curve and the HSE curves.
+
+
+
+\begin{figure}[h]
+\vspace{.3in}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'qp.decline.curves' not found}}\end{kframe}
+\end{knitrout}
+
+
+\caption[Comparison of runoff curves]{ \textbf{Comparison of runoff curves.} These are the runoff curves for mesothelioma.  I used the Stallard-Manton curve, which gives the lowest liablity estimate of the three modern curves.  The curves that stop early can be extended through extrapolation. The chart shows them as they were originally calculated.} 
+\label{fig:declines}
+\vspace{.3in}
+\end{figure}
+
+
+
+
+
+\section{Payment percentages taking into account both inflation and up-to-date demographic profiles}
+
+Table \ref{tab:prelim.results} shows that when both adjust for inflation and switch to the more up-to-date Stallard and Manton disease forecasting model, my Kaiser liability estimate increases to \$2,584.5 million.  The associated payment percentage is 25.8\%.  This is my preferred estimate.
+
+
+
+
+\chapter{Temporary drivers of Trust payout levels}
+
+There are factors that may be temporarily depressing Trust payout levels.  One is that apparently many deferred SOL surge claims have been hitting their 3-year limits in deferral.  Many of these claims have been entering the review process.  As I understand it, these claims have (a) low queue numbers, and (b) tend to have many defects.  One effect is that there have been very few offers to recently received claims -- see Figure \ref{fig:offers}.\footnote{The remarks in this section regarding the Kaiser Trust reflect Trust claims data as of 7/31/13. Some of my general observations regarding other trusts reflect more recent events.}
+
+Another effect is that a large number of claims are sitting in the category "Qualified - pending QC review."  See Figure \ref{fig:status}.
+
+In addition, at many other trusts processing has been slowed in the last two years by various processing holds, apparently due at least in part to some ongoing audits.  Offers appear to be rebounding at some of these trusts, based on my personal observations.  I generally expect more claims to be filed in deferred status (or deferring shortly after filing) duriung slowdown periods, especially when there is some temporary task that may absorb plaintiff lawfirm resources -- e.g., responding to audit requests, or preparing a large number of claims coming out of deferral for review.
+
+It is certainly the case that initial deferral rates for mallignant claimns have gone up at the Kaiser Trust during this recent period, as shown in Figure \ref{fig:init.defer}.  These deferals may be a temporary phenomenon.
+
+
+
+\begin{figure}[h]
+\vspace{.3in}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'domestic' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'domestic' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'domestic' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'dd' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'gg.offers' not found}}\end{kframe}
+\end{knitrout}
+
+
+\caption[Kaiser offers by date received]{ \textbf{Kaiser offers by date received.} Very few claims received after the first four months of 2012 have received offers. This is apparently because many deferred SOL surge claims have hit their three-year limit and are clogging up the review process -- these claims have low queue numbers.  In addition, they appear to have many deficiences, so relatively few offers are being made.} 
+\label{fig:offers}
+\vspace{.3in}
+\end{figure}
+
+\begin{figure}[h]
+\vspace{.3in}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'domestic' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'dd' not found}}
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'gg.status' not found}}\end{kframe}
+\end{knitrout}
+
+
+\caption[Current status of Kaiser claims]{ \textbf{Current status of Kaiser claims.} Some 18,000 claims are sitting in status "Qualified − Pending QC Review." Normally, I would expect claims to move pretty quickly out of this category.  The build-up in this category appears to be related to the fact that many deferred SOL surge claims have hit their three-year limit and are clogging up the review process. } 
+\label{fig:status}
+\vspace{.3in}
+\end{figure}
+
+\begin{figure}[h]
+\vspace{.3in}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'qp.init.defer' not found}}\end{kframe}
+\end{knitrout}
+
+
+\caption[Fraction of claims deferred from the the outset]{ \textbf{Fraction of claims deferred from the the outset.} The fraction of malignant claims that are "filed as deferred" has increased in the past two years.  This is a period in which (a) at the Kaiser Trust, many deferred SOL surge claims have hit their three-year limit and are clogging up the review process and (b) at many trusts there have been significant holds on processing of claims due to various audits in progress.} 
+\label{fig:init.defer}
+\vspace{.3in}
+\end{figure}
+  		
+
+
+
+\chapter{Other considerations}
+
+%\section{Federal reserve policies and other projections}
+
+%\section{Asymmetric risk}
+
+%\section{When to adjust payments for inflation}
+
+%\section{Different mix of pending and future values from Mark in my baseline estimate}
+
+\section{Trust expenses}
+ 
+
+Mark's \$45 million expense figure appears reasonable, but expenses are in part related to how many claims are processed.  My projections in Table \ref{tab:prelim.results} that assume more future claims (based on  Stallard-Manton models of future disease incidence) than Peterson assumes, would result in somewhat increased expenses.  The payment percentages for these projections would be slightly lower than what Table \ref{tab:prelim.results} reports if these increased expenses were taken into account.
+
+\section{Declining IR values}
+
+I have not allowed for the possibility that individual review (IR) values might be allowed to decrease over time due to the aging of clainmants, which could lower to some extent the amount of money that needs to be retained in order to pay inflation adjusted future claim values.  Increasing age, and associated changes in lost future wages and number of dependents, are factors that decrease claim value in IR models.  Often, this decrease is of an order of magnitude of about 2\% per year of age.  However, if IR values decline at this rate, there is only minimal offset to the inflation asjustment.  The reasons are:
+
+\begin{enumerate}
+  \item The average age of claimants will decrease at much less than one year of age per calendar year, based on how many exposed workers are dying off at the old end (and vanishing from the potential claimant pool) compared to how many living exposed workers are contracting asbestos diseases at the young end.  It is easy to see that this is so.  The average age of mesothelioma claimants today is 75.  The average age of mesothelioma claimants in 2050 will not be 112, which is what you would get if average age goes up one year per calendar year.  All models of future incidence assume that essentially no workers will be alive to contract asbestos diseases before age 100.  By my calculation, the average age in 2050 will be something like 85.
+  \item Many claimants are not in IR, and will continue to get the same payments even if IR values decline.
+\end{enumerate}
+
+By my calculations, the offset associated with letting IR values decline as IR claimants age is minimal.  In addition, I have (a) not allocated any money for making retroactive inflation adjustments whenever there is an inflation adjustment -- as some trusts have done, or (b) adopted the 2.5\% CPI inflation figure that other experts use.  In sum, I believe my inflation-adjusted forecasts are reasonable as they stand, although more work could be done to make more precise calculations of the possible interaction between inflation adjustments and declining IR values.
+
+
+
+
+
+
+\part*{Appendices}
+\begin{appendices}
+% \renewcommand{\appendixname}{Appendix}
+% \renewcommand{\thechapter}{Appendix.}
+
+
+\chapter{Methods}
+
+I will be extremely brief here.  As my starting estimate and Mark's preferred estimate are very close, the main areas of difference are the inflation adjustment and the use of the Stallard runoff curve, and I know that Mark and Dan are very familiar with these calculations, and their typical orders of magnitude. 
+
+To calculate probabilites of being paid as a function of months since received, I calculate what are called "multistate survival curves with competing risks."  These are standard methods, particularly in epidemiology.  The two terminal states (aka "competing risks") are payment and withdraw/disallow/reject.  The intermediate state is deferral.  As time since claim receipt progresses, the probability of going to either deferral, withdraw, or pay is calculated as a function of the elapsed time.  If a claimant moves to deferral, probabilites of going to either withdraw or pay are calculated as a function of both elapsed time and being "ever deferred".
+
+I stratify these analyses by:
+
+\begin{enumerate}
+  \item Injury,
+  \item Option,
+  \item Received during the SOL surge,
+  \item Initial defer (deferred from the outset -- the ever-deferred state in the survival model is for subsequent deferrals), and
+  \item Year received (with some grouping).
+\end{enumerate}
+
+Because there processing anomalies in 2011-2013 due to re-awakening of SOL surge deferred claims, and possible processing holds at some trusts, I predict the probability of ultimate payment for these years using the probability of ultimate payment calculated for claims received in 2008-2011, within strata.
+
+I use the average liquidated value within injury to value claims.  My calibration period for calculating the annual average number of valid claims (before initiating the runoff curves) is 2011-2013. 
+
+
+\begin{figure}[h]
+\vspace{.3in}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: object 'qp.calibration.period' not found}}\end{kframe}
+\end{knitrout}
+
+
+\caption[Calibration periods]{ \textbf{Calibration periods.} The blue lines represent the baseline numbers of annual valid claims that I use in my projections.} 
+\label{fig:calib}
+\vspace{.3in}
+\end{figure}
+
+
+\chapter{Kaiser payment percentages -- background}
+
+The history of Kaiser Trust payment percentages is this:
+
+\begin{doublespace}
+\begin{tabbing}
+\hspace*{.25in}\=\hspace*{4in}\=\hspace*{1in}\= \kill
+
+\>Trust asks for reports from TAC and FCR experts \> 7/25/2013 \\
+\>Trust implements compromise percentage\>1/13/2011    \>35.0\%  \\
+\>Trust solicits an estimate from Verus for pendings \\
+\>Disagreement among experts \\
+\>Trust circulates ARPC change proposal \>10/12/2010     \>32.2\%  \\
+\>SOL date                              \>6/18/2010 \\
+\>Initial payment percentage            \>1/1/2007     \>39.5\%  \\
+
+
+\end{tabbing}
+\end{doublespace}
+
+
+In its report from 10/12/2010, ARPC allocated 6\% of pending claim payments and 14\% of future claim payments to foreign claims.  This analysis was four months after the Kaiser SOL date, which (as with many trusts) was when the first big filing of foreign claims occurred.  As I understand it, subsequent review by the trust showed no foreign exposure.  Neither I nor Mark sets aside any money for foreign claims in the projections discussed in this note.
+
+ARPC's 10/12/10 estimate of the value of future domestic claims was \$
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\\Error in format(arpc.domestic.future, big.mark = ",") : \\\ \ object 'arpc.domestic.future' not found}} million.  This is total nominal amount, not a net present value.  My baseline estimate (before adjusting for inflation and moving to more up-to-date forecasting methods) of the nominal amount of future domestic dollars today -- three years later -- is \$1,923 million.  It appears that domestic claims have exceeded expectations, and it is only the removal of the set-aside for foreigns that allows either Mark or me to get baseline payment percentages that are still around 35\%.
+
+\end{appendices}
+
+\end{document}

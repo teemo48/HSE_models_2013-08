@@ -411,11 +411,21 @@ loglik0
 
 minusloglik = function( alpha, age1, age2, year1, year2, k) {
   
+  # Returns minus log-likelihood for an HSW model
+  
+  # Not ideal
+  # Assumes matrices aggregator and x are in the calling environment
+  # Also nx1 matrices Y (meso deaths) and P (population)
+  # Can (probably) pass these as ... arguments in the mle() call,
+  #   which then passes them to optim -- which in turn passes them
+  #   as ... arguments to this function.  Maybe.
+  
+  # Also not ideal
+  #   Assumes only two df for both the age and year indices, and no 
+  #   background exposure
+  
   beta   = matrix( c( alpha, age1, age2, year1, year2, k), 6, 1)
   lambda = aggregator %*% exp( x %*% beta) * P
-  
-#   browser()
-#   plot( lambda, P)
   
   loglik = sum( Y*log(lambda) - lambda, na.rm=TRUE)
   -loglik
@@ -530,12 +540,42 @@ summ = examine.hse.fit( mle.fit=beta.hat,
 
 
 
+# ================================================================
+# Estimate k, instead of leaving it fixed
+# ================================================================
 
 
+start.vals
+fixed.vals
 
+# Coefficients from fit with k fixed at two
+beta.hat
 
+startvals.with.k.fixed = start.vals
+for (i in 1:length(start.vals)) {
+  start.vals[[i]] = coef(beta.hat)[i]
+}
+start.vals
 
+# mle() does not like it if the vectors in the start.vals list have names
+# mle() just wants the list name
+for (i in 1:length(start.vals)) { names(start.vals[[i]]) = NULL}
+start.vals
 
+mle.fit.k.estimated = mle( minusloglik, start=start.vals)
+
+mle.fit.k.estimated
+summary(mle.fit.k.estimated)
+AIC(mle.fit.k.estimated)
+AIC(beta.hat)
+AIC(mle.fit.k.estimated) - AIC(beta.hat)  # Want to minimize AIC -- negative is good.
+vcov(mle.fit.k.estimated)
+
+summ = examine.hse.fit( mle.fit=mle.fit.k.estimated, 
+                        aggregator = aggregator, 
+                        x = x, Y = Y, P = P, 
+                        title.text = 'Annual meso counts, UK males, k estimated, 2df for indices',
+                        years=years, year.index=year.index, ages=ages, age.index=age.index) 
 
 
 

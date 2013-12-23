@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}
+\contentsline {section}{\numberline {2}Projecting mesothelioma incidence}{2}{section.2}
+\contentsline {section}{\numberline {3}Mesothelioma projection methods}{3}{section.3}
+\contentsline {section}{\numberline {4}The basic "risk as function of exposure" models}{6}{section.4}
+\contentsline {section}{\numberline {5}Previous vesions of the HSE model}{7}{section.5}
+\contentsline {section}{\numberline {6}Historic incidence data for model fitting}{7}{section.6}
+\contentsline {subsection}{\numberline {6.1}U.S. data}{7}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}OECD data}{8}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Use of mesothelioma incidence data in fitting HSE and releated models}{8}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Australia data}{9}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.5}UK data}{10}{subsection.6.5}
+\contentsline {section}{\numberline {7}Demographic data for model fitting and forecasting}{11}{section.7}
+\contentsline {section}{\numberline {8}Previous fits of the HSE model}{13}{section.8}
+\contentsline {subsection}{\numberline {8.1} Initial HSE model(s)}{13}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2} Bayesian refitting of the original HSE model(s) with MCMC }{14}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}Adoption of the HSE model(s) by actuarial societies and public health analysts}{14}{subsection.8.3}
+\contentsline {subsection}{\numberline {8.4}Initial use of the HSE model(s) in the U.S. asbestos trust world}{14}{subsection.8.4}
+\contentsline {subsection}{\numberline {8.5}More recent HSE models -- two-stage clonal and "imports-based"}{15}{subsection.8.5}
+\contentsline {section}{\numberline {9}Our HSE modelling plan}{16}{section.9}
