@@ -1,0 +1,13 @@
+Package: addb
+Version: 3.223
+Date: 2010-10-29
+Title: Australian Demographic Data Bank
+Author: Rob J Hyndman <Rob.Hyndman@monash.edu>
+Maintainer: Rob J Hyndman <Rob.Hyndman@monash.edu>
+Depends: R (>= 2.10), demography
+LazyData: yes
+Description: These data are from the Australian Demographic Data Bank.
+             They can be plotted and analysed using the demography package.
+License: GPL (>= 2)
+URL: http://robjhyndman.com/software/addb/
+Packaged: 2013-07-07 20:07:47 UTC; hyndman
