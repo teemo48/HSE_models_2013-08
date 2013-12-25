@@ -16,7 +16,6 @@ A (non-exhaustive) list of added files is below.  The links are to wiki pages as
 
 ### TW knitr programs and/or output
 
-* HSE_Poisson_regression.Rnw   
+* [HSE_Poisson_regression.Rnw](../../wiki/HSE_Poisson_regression.Rnw)   
    More complete description of HSE modeling with splines
 
-[This is a crude link to a wiki page specifying .md](../../wiki/HSE_Poisson_regression.Rnw)
