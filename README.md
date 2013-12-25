@@ -10,7 +10,7 @@ A (non-exhaustive) list of added files is below.  The links are to wiki pages as
 
 ### TW R programs 
 
-* HSE UK fit.r(../../wiki/Sidebar.md)    
+* [HSE UK fit.r](../../wiki/HSE%20%UK%20%fit.r)    
    My rough but working "proof of concept" program to fit UK mesos with natural splines
    Also demonstrates fast execution of log-lik function by using matrix multiplication
 
